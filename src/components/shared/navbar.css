@@ -1,0 +1,31 @@
+nav > ul {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+nav > ul > .navigation {
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+nav > ul > .navigation:hover {
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  background-color: #f7f7f7;
+}
+
+nav > ul > .navigation > i {
+  font-size: 16px;
+}
+
+.active-main {
+  color: #157afe;
+  background-color: #eff7fe;
+}

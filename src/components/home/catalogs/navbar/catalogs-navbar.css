@@ -1,0 +1,51 @@
+.catalog-navbar > ul {
+  display: flex;
+  gap: 20px;
+}
+
+.catalog-navbar > ul > .navigation {
+  text-align: center;
+  padding: 10px 15px;
+  gap: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  position: relative;
+  transition: all 0.15s ease-in-out;
+}
+.catalog-navbar > ul > .navigation:hover {
+  color: #157afe;
+}
+
+.catalog-navbar > ul > .navigation::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  bottom: 0;
+  left: -10px;
+  opacity: 0;
+  height: 3px;
+  background: #157afe;
+  border-radius: 2px 2px 0px 0px;
+  transition: all 0.15s ease-in-out;
+}
+.catalog-navbar > ul > .navigation:hover::before {
+  left: 0px;
+  opacity: 1;
+}
+
+.catalog-navbar > ul > .active {
+  color: #157afe;
+  transition: all 0.15s ease-in-out;
+}
+.catalog-navbar > ul > .active::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  bottom: 0;
+  left: 0px;
+  opacity: 1;
+  height: 3px;
+  background: #157afe;
+  border-radius: 2px 2px 0px 0px;
+  transition: all 0.15s ease-in-out;
+}
