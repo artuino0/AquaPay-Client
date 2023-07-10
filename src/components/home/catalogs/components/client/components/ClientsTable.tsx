@@ -11,7 +11,7 @@ const ClientsRows = (props: IProps) => {
   return (
     <>
       {customers?.map((customer) => (
-        <tr className="cursor-default border-b last:border-b-0 even:bg-gray-50 hover:bg-gray-100" key={customer.id}>
+        <tr className="cursor-default border-b last:border-b-0 even:bg-gray-50 hover:bg-gray-100 text-sm" key={customer.id}>
           <td className="text-center w-fit">{customer.externalContractId}</td>
           <td className="px-6 py-3 text-center">
             {customer.name} {customer.lastName} {customer.middleName}

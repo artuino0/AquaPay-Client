@@ -93,9 +93,6 @@ const ClientForm = (props: IProps) => {
             <input className="border outline-deep-blue w-full box-border px-3 py-2 rounded-md " placeholder="Correo electronico" type="email" id="email" {...register("email")} />
           </div>
           <input className="border outline-deep-blue w-full box-border px-3 py-2 rounded-md " placeholder="Telefono" type="tel" id="phone" {...register("phoneNumber")} />
-          <hr />
-          <input className="border outline-deep-blue w-full box-border px-3 py-2 rounded-md " placeholder="Ultima lectura" type="number" id="phone" {...register("lastRecord")} />
-          <input className="border outline-deep-blue w-full box-border px-3 py-2 rounded-md " placeholder="Saldo" type="number" id="phone" {...register("lastBalance")} />
         </div>
         <div className="border-t py-3 px-6 flex justify-end gap-2">
           <button type="reset" className="bg-red-300 text-red-600 px-6 py-2" onClick={handleClose}>

@@ -5,7 +5,9 @@ import TariffForm from "./components/TariffForm";
 import { ITariff, TariffElement } from "../../../../../types/tariff.interface";
 import { getStringDateCreated } from "../../../../../helpers/date.string";
 import requestController from "../../../../../helpers/request.axios";
-import TariffInput from "./components/TariffInput";
+import TariffList from "./components/TariffList";
+import ChangeStore from "../../../../../store/ChangesStore";
+import floppy from "../../../../../assets/svgs/floppy.svg";
 
 const TariffCatalog = () => {
   const [tableOpen, setTableOpen] = useState<boolean>(false);
@@ -16,6 +18,8 @@ const TariffCatalog = () => {
   const [cycleId, setCycleId] = useState<string | null>(null);
   const [updater, setUpdater] = useState<number>(0);
 
+  const { changes, clearChanges } = ChangeStore();
+
   useEffect(() => {
     let d = new Date();
     setMonth(d.getMonth() + 1);
@@ -24,11 +28,20 @@ const TariffCatalog = () => {
   useEffect(() => {
     requestController<ITariff[]>({
       endpoint: "tariffs",
-      method: "get",
+      method: "GET",
     }).then((data) => {
       setTariffs(data);
     });
   }, [updater]);
+
+  const saveChanges = () => {
+    requestController({ endpoint: `tariffs/${cycleId}`, method: "PUT", body: changes })
+      .then(() => {
+        alert("tarifas actualizadas correctamente");
+        clearChanges();
+      })
+      .catch(() => {});
+  };
 
   return (
     <div>
@@ -74,37 +87,14 @@ const TariffCatalog = () => {
             ))}
           </tbody>
         </table>
-        {tariffsCubic ? (
-          <table className="w-fit border-l-4 text-sm text-center h-fit">
-            <thead>
-              <tr className="bg-gray-100 border-b sticky top-0">
-                <th className="px-6 py-3">m3</th>
-                <th className="px-6">Domestico</th>
-                <th className="px-6">Comercial</th>
-                {/* <th className="px-6">Mixto</th> */}
-              </tr>
-            </thead>
-            <tbody>
-              {tariffsCubic
-                ? tariffsCubic.map((tariff) => (
-                    <tr key={tariff._id} className="hover:bg-gray-50 even:bg-gray-50">
-                      <td className="px-6 border-r">{tariff.consumption}</td>
-                      <td className="border-r w-[100px]">
-                        <TariffInput amount={tariff.domestic.$numberDecimal.toString()} cycleId={cycleId!} tariffId={tariff._id} />
-                      </td>
-                      <td className=" border-r">
-                        <TariffInput amount={tariff.commercial.$numberDecimal.toString()} cycleId={cycleId!} tariffId={tariff._id} />
-                      </td>
-                      {/* <td className="">
-                    <input type="text" className="text-center w-fit h-full py-2 outline-deep-blue bg-transparent" value={tariff.mixed.$numberDecimal} />
-                  </td> */}
-                    </tr>
-                  ))
-                : null}
-            </tbody>
-          </table>
-        ) : null}
+
+        {tariffsCubic && cycleId ? <TariffList cycleId={cycleId} tariffsCubic={tariffsCubic} /> : null}
       </div>
+      {changes.length != 0 && tariffsCubic ? (
+        <button className="fixed bottom-[5.5rem] right-6 bg-blue-600 text-white h-14 w-14 shadow-lg rounded-full text-xl flex justify-center items-center" onClick={() => saveChanges()}>
+          <img src={floppy} alt="" className="w-8" />
+        </button>
+      ) : null}
       {tariffsCubic ? (
         <button className="fixed bottom-6 right-6 bg-red-600 text-white h-14 w-14 shadow-lg rounded-full text-xl" onClick={() => setTariffCubic(null)}>
           <i className="bi bi-x-lg"></i>

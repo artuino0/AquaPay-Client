@@ -19,6 +19,8 @@ import CustomerSerices from "./components/home/catalogs/components/services/Cust
 import CaptureInterface from "./components/capture/CaptureInterface";
 import Records from "./components/home/records/Records";
 import PeriodCatalog from "./components/home/catalogs/components/periods/PeriodCatalog";
+import ServicesList from "./components/capture/pages/ServicesList/ServicesList";
+import ServiceCapture from "./components/capture/pages/ServicePage/ServiceCapture";
 
 const App = () => {
   return (
@@ -31,7 +33,25 @@ const App = () => {
               <CaptureInterface />
             </ProtectedRoute>
           }
-        ></Route>
+        >
+          <Route path="" element={<Navigate to={"/mobile/services"}></Navigate>} />
+          <Route
+            path="services"
+            element={
+              <ProtectedRoute>
+                <ServicesList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="services/:serviceId"
+            element={
+              <ProtectedRoute>
+                <ServiceCapture />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
         <Route
           path="/"
           element={

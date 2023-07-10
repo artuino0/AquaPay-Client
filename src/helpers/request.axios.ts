@@ -3,16 +3,19 @@ import { BASE_PATH } from "../global.variables";
 
 interface IAxiosRequest {
   endpoint: string;
-  method: string;
+  method: "GET" | "POST" | "PUT" | "DELETE";
   body?: any;
+  headers?: any;
 }
 
 const requestController = <T>(data: IAxiosRequest): Promise<T> => {
+  console.log(data);
   const config: AxiosRequestConfig = {
     method: data.method,
     url: `${BASE_PATH}/${data.endpoint}`,
     headers: {
       Authorization: window.localStorage.getItem("token"),
+      "Content-Type": data.headers ? "multipart/form-data" : "application/json",
     },
     data: data.body,
   };

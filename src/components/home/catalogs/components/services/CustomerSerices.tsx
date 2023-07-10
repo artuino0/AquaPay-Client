@@ -52,8 +52,8 @@ const CustomerSerices = () => {
           </thead>
           <tbody>
             {customer?.services?.map((service) => (
-              <tr className="cursor-default border-b last:border-b-0 even:bg-gray-50 hover:bg-gray-100">
-                <td className="px-6 py-3">{service.meterNumber}</td>
+              <tr className="cursor-default border-b last:border-b-0 even:bg-gray-50 hover:bg-gray-100" key={service._id}>
+                <td className="px-6 py-3">{service.meterNumber === "" ? "N/A" : service.meterNumber}</td>
                 <td className="text-center w-fit">
                   {service.street} #{service.number}, {service.city}, {service.state}
                 </td>
@@ -76,7 +76,7 @@ const CustomerSerices = () => {
       ) : (
         <></>
       )}
-      <Modal className={"modal"} show={showModal} onHide={handleClose} renderBackdrop={RenderBD}>
+      <Modal className={"modal"} show={showModal} renderBackdrop={RenderBD}>
         <ServiceForm setShowModal={setShowModal} customerId={customerId!} setUpdater={setUpdater} updater={updater} />
       </Modal>
     </div>

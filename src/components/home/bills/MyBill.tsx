@@ -1,5 +1,6 @@
 import { Page, Text, View, Image, Document, StyleSheet } from "@react-pdf/renderer";
-import logo from "../../../assets/logo-c.png";
+import { PUBLIC_PATH } from "../../../global.variables";
+import { ICompany } from "../../../interfaces/company";
 
 // Create styles
 const styles = StyleSheet.create({
@@ -24,23 +25,29 @@ const styles = StyleSheet.create({
   },
 });
 
+interface IProps {
+  company: ICompany;
+}
+
 // Create Document Component
-const MyBill = () => (
+const MyBill: React.FC<IProps> = ({ company }) => (
   <Document>
     {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
       <Page size="LETTER" style={styles.page} key={number} orientation="landscape">
         <View style={{ width: "50%" }}>
           <View style={styles.header}>
             <View style={{ width: "50%" }}>
-              <Image source={logo} style={{ width: "100px" }} />
+              <Image source={`${PUBLIC_PATH}/logo_company.png`} style={{ width: "80%" }} />
             </View>
-            <View style={{ width: "50%", fontSize: "9px", textAlign: "right" }}>
-              <Text style={{ fontSize: "12px", fontWeight: "bold", fontStyle: "italic" }}>GRUPO AQUAPAY, S.A. DE C.V.</Text>
-              <Text>5 DE MAYO No. 126 2-C</Text>
-              <Text>ZONA CENTRO, C.P. 37800</Text>
-              <Text>LEON, GUANAJUATO</Text>
-              <Text>TEL. 01 (000) 733-78-73</Text>
-              <Text>Celular. (000) 599-44-85</Text>
+            <View style={{ width: "50%", fontSize: "9px", textAlign: "right", display: "flex", flexDirection: "column", alignItems: "flex-end", justifyContent: "center" }}>
+              <Text style={{ fontSize: "12px", fontWeight: "bold", fontStyle: "italic" }}>{company.companyName.toUpperCase()}</Text>
+              <Text>{company.address}</Text>
+              <Text>
+                {company.downtown.toUpperCase()}, C.P. {company.postalCode}
+              </Text>
+              <Text>{company.city_state.toUpperCase()}</Text>
+              <Text>TEL. 01 {company.phone}</Text>
+              <Text>CEL. +52 {company.cellphone}</Text>
             </View>
           </View>
           <View style={styles.header}>

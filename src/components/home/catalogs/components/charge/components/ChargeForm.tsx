@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { BASE_PATH } from "../../../../../../global.variables";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
+import requestController from "../../../../../../helpers/request.axios";
 
 interface IProps {
   setUpdater: (newValue: number) => void;
@@ -10,8 +11,7 @@ interface IProps {
   updater: number;
 }
 
-const ChargeForm = (props: IProps) => {
-  const { setShowModal, setUpdater, updater } = props;
+const ChargeForm: React.FC<IProps> = ({ setShowModal, setUpdater, updater }) => {
   const Authorization = window.localStorage.getItem("token");
   const navigate = useNavigate();
 
@@ -22,13 +22,19 @@ const ChargeForm = (props: IProps) => {
   } = useForm();
 
   const onSubmit = (data: any) => {
-    console.log(data);
-    axios
-      .post(`${BASE_PATH}/charges`, { ...data }, { headers: { Authorization } })
+    requestController({ endpoint: "charges", method: "POST", body: { ...data } })
       .then(() => {
         setUpdater(updater + 1);
         setShowModal(false);
+        alert("Nuevo concepto de cargo agregado");
       })
+      .catch((e) => {
+        console.log(e.message);
+      });
+
+    /* axios
+      .post(`${BASE_PATH}/charges`, { ...data }, { headers: { Authorization } })
+      .then(() => {})
       .catch((e: AxiosError) => {
         if (e.response) {
           if (e.response.status === 401) {
@@ -38,7 +44,7 @@ const ChargeForm = (props: IProps) => {
         } else {
           alert("Servidor no disponible");
         }
-      });
+      }); */
   };
   return (
     <div className="modal-container rounded-md overflow-hidden">
@@ -52,7 +58,7 @@ const ChargeForm = (props: IProps) => {
           </div>
         </div>
         <div className="border-t py-3 px-6 flex justify-end gap-2">
-          <button type="reset" className="bg-red-300 text-red-600 px-6 py-2">
+          <button type="reset" className="bg-red-300 text-red-600 px-6 py-2" onClick={() => setShowModal(false)}>
             Cancelar
           </button>
           <button type="submit" className="bg-deep-blue text-white px-6 py-2">

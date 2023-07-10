@@ -1,48 +1,48 @@
-import { useState, useEffect } from "react";
-import { IService } from "../../types/service.interface";
-import axios from "axios";
-import { BASE_PATH } from "../../global.variables";
+import { useEffect, useState } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import { dataStore } from "../../store/DataStore";
 const CaptureInterface = () => {
-  const [services, setServices] = useState<IService[]>();
-  const Authorization = window.localStorage.getItem("token");
+  const navigate = useNavigate();
 
+  const { onServiceCapture, setOnServiceCapture } = dataStore();
+  const [day, setDay] = useState<number>(0);
+  const { fetchData, periodBilling } = dataStore();
   useEffect(() => {
+    fetchData();
+    const d = new Date();
+    setDay(d.getDate());
     if (window.innerWidth > 700) {
       alert("Esta seccion solo esta disponible para dispositivos moviles");
       window.location.href = "/";
     }
-
-    axios.get<IService[]>(`${BASE_PATH}/services`, { headers: { Authorization } }).then(({ data }) => {
-      setServices(data);
-    });
   }, []);
 
   return (
     <>
-      <div className="bg-deep-blue text-white text-xl px-3 py-5 shadow-md sticky top-0 left-0">Linea de captura</div>
-      <div className="">
-        <h1 className="text-xl font-bold bg-gray-100 px-2 py-3 border">Lista de servicios</h1>
-        <div className="relative">
-          <input className="border border-t-0 pl-2 pr-12 py-3 w-full outline-deep-blue rounded-none" type="text" placeholder="Buscar servicio" />
-          <i className="bi bi-search absolute right-4 top-4 text-gray-400"></i>
+      <div className={" bg-deep-blue text-white px-3 py-3 shadow-md sticky top-0 left-0 z-10 transition-all ease-in duration-150 flex justify-between"}>
+        <div>
+          {onServiceCapture ? (
+            <button
+              className="w-[30px] mr-1"
+              onClick={() => {
+                navigate(-1);
+                setOnServiceCapture(false);
+              }}
+            >
+              <i className="bi bi-chevron-left"></i>
+            </button>
+          ) : null}
+          {onServiceCapture ? "Servicio" : "Linea de captura"}
         </div>
-        <ul>
-          {services?.map((service) => (
-            <li key={service._id} className="flex items-center justify-between border border-t-0 px-2 py-2 leading-tight even:bg-gray-50">
-              <div>
-                <span>
-                  {service.street} #{service.number}
-                </span>
-                <br />
-                <small className="text-gray-400">
-                  {service.customerId.externalContractId} - {service.customerId.name} {service.customerId.lastName} {service.customerId.middleName}
-                </small>
-              </div>
-              <i className="bi bi-chevron-right"></i>
-            </li>
-          ))}
-        </ul>
+        <div className="capitalize text-sm flex items-center">{periodBilling ? periodBilling.name : "Sin Periodo"}</div>
       </div>
+      {[29, 30, 31, 1, 2, 3, 4, 6].includes(day) && periodBilling ? (
+        <Outlet></Outlet>
+      ) : (
+        <div className="border border-yellow-500 m-6 p-3 rounded-md bg-yellow-100 text-yellow-600 text-center">
+          {periodBilling ? "Para registrar lecturas debe encontrarse dentro del periodo establecido" : "No hay un periodo activo verifica el catalogo y vuelve a intentarlo"}
+        </div>
+      )}
     </>
   );
 };

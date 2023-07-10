@@ -14,7 +14,7 @@ const ChargeCatalog = () => {
     requestController<ICharge[]>({ endpoint: "charges", method: "GET" }).then((data) => {
       setCharges(data);
     });
-  }, []);
+  }, [updater]);
 
   const handleClose = () => setShowModal(false);
 

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { MESES } from "../../../../../../global.variables";
-import axios from "axios";
 import requestController from "../../../../../../helpers/request.axios";
 
 interface IProps {
