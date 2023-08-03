@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Filter from "./components/Filter";
 import { IService } from "../../../../types/service.interface";
 import { useEffect } from "react";
 import requestController from "../../../../helpers/request.axios";
 import { Link } from "react-router-dom";
-import { dataStore } from "../../../../store/DataStore";
 
 const ServicesList = () => {
   const [services, setServices] = useState<IService[]>();
@@ -23,7 +22,7 @@ const ServicesList = () => {
       <Filter services={services!} mutatedServices={mutatedServices!} setMutatedServices={setMutatedServices} />
       <ul className="text-sm">
         {mutatedServices?.map((service) => (
-          <>
+          <div key={service._id}>
             {service.meterNumber !== "" ? (
               <Link to={`${service._id}`} key={service._id} className="flex items-center justify-between border border-t-0 px-2 py-2 leading-tight even:bg-gray-50">
                 <div>
@@ -38,7 +37,7 @@ const ServicesList = () => {
                 <i className="bi bi-chevron-right"></i>
               </Link>
             ) : null}
-          </>
+          </div>
         ))}
       </ul>
     </div>

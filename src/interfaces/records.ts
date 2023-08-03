@@ -41,7 +41,8 @@ export interface Record {
 }
 
 export interface PeriodID {
-  id: string;
+  _id?: string;
+  id?: string;
   name: string;
   year: number;
   month: number;

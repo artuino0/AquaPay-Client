@@ -9,7 +9,6 @@ interface IAxiosRequest {
 }
 
 const requestController = <T>(data: IAxiosRequest): Promise<T> => {
-  console.log(data);
   const config: AxiosRequestConfig = {
     method: data.method,
     url: `${BASE_PATH}/${data.endpoint}`,
