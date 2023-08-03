@@ -32,6 +32,7 @@ const ServiceCapture = () => {
     console.log(recordValue);
     if (!recordValue || recordValue === "0") return alert("El valor de la lectura no puede ser 0");
     if (service?.records.some((record) => record.periodId.id === periodBilling?.id)) return alert(`Ya existe un registro en el periodo ${periodBilling?.name}`);
+    if (service?.records.some((record) => record.currentRecord > Number(recordValue))) return alert(`El nuevo registro no puede ser menor a uno anterior`);
     setIsLoaded(false);
 
     setTimeout(() => {
