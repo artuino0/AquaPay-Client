@@ -22,3 +22,10 @@ export interface IService {
   };
   __v: number;
 }
+
+export interface IServiceGetResponse {
+  totalServices: number;
+  totalPages: number;
+  currentPage: number;
+  services: IService[];
+}

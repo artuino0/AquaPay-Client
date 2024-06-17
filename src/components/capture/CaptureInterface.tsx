@@ -19,7 +19,11 @@ const CaptureInterface = () => {
 
   return (
     <>
-      <div className={" bg-deep-blue text-white px-3 py-3 shadow-md sticky top-0 left-0 z-10 transition-all ease-in duration-150 flex justify-between"}>
+      <div
+        className={
+          " bg-deep-blue text-white px-3 py-3 shadow-md sticky top-0 left-0 z-10 transition-all ease-in duration-150 flex justify-between"
+        }
+      >
         <div>
           {onServiceCapture ? (
             <button
@@ -34,13 +38,17 @@ const CaptureInterface = () => {
           ) : null}
           {onServiceCapture ? "Servicio" : "Linea de captura"}
         </div>
-        <div className="capitalize text-sm flex items-center">{periodBilling ? periodBilling.name : "Sin Periodo"}</div>
+        <div className="capitalize text-sm flex items-center">
+          {periodBilling ? periodBilling.name : "Sin Periodo"}
+        </div>
       </div>
-      {[29, 30, 31, 1, 2, 3, 4, 6].includes(day) && periodBilling ? (
+      {[29, 30, 31, 1, 2, 3, 4, 6, 15, 17].includes(day) && periodBilling ? (
         <Outlet></Outlet>
       ) : (
         <div className="border border-yellow-500 m-6 p-3 rounded-md bg-yellow-100 text-yellow-600 text-center">
-          {periodBilling ? "Para registrar lecturas debe encontrarse dentro del periodo establecido" : "No hay un periodo activo verifica el catalogo y vuelve a intentarlo"}
+          {periodBilling
+            ? "Para registrar lecturas debe encontrarse dentro del periodo establecido"
+            : "No hay un periodo activo verifica el catalogo y vuelve a intentarlo"}
         </div>
       )}
     </>

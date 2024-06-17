@@ -10,6 +10,7 @@ interface IAxiosRequest {
 
 const requestController = <T>(data: IAxiosRequest): Promise<T> => {
   const config: AxiosRequestConfig = {
+    params: data.method === "GET" ? data.body : null,
     method: data.method,
     url: `${BASE_PATH}/${data.endpoint}`,
     headers: {

@@ -42,7 +42,7 @@ const PeriodCatalog = () => {
           ))}
         </tbody>
       </table>
-      {[28, 29, 30, 31, 1, 2, 3, 4, 5, 6].includes(date) ? (
+      {[28, 29, 30, 31, 15, 16, 17].includes(date) ? (
         <div className="add fixed bottom-3 right-3 w-14 h-14 bg-deep-blue flex items-center justify-center text-2xl rounded-full text-white cursor-pointer" onClick={() => setShowModal(true)}>
           +
         </div>
