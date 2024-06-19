@@ -1,3 +1,6 @@
+import React from "react";
+import "flowbite"; // Asegúrate de importar Flowbite
+
 type Column<T> = {
   Header: string;
   accessor?: string;
@@ -82,14 +85,23 @@ const DataTable = <T extends Record<string, any>>({
               </td>
             ))}
             {actions && (
-              <td className="px-6 py-3 text-center w-fit">
-                {actions.map((action, actionIndex) => (
-                  <i
-                    key={actionIndex}
-                    className={`${action.icon} hover:text-deep-blue cursor-pointer mx-1`}
-                    onClick={() => action.action(row)}
-                  ></i>
-                ))}
+              <td className="px-6 py-3 text-center">
+                <div className="flex w-full justify-center gap-3">
+                  {actions.map((action, actionIndex) => (
+                    <div
+                      key={actionIndex}
+                      className="relative flex items-center justify-center group"
+                    >
+                      <i
+                        className={`${action.icon} hover:text-deep-blue cursor-pointer`}
+                        onClick={() => action.action(row)}
+                      ></i>
+                      <div className="absolute bottom-full mb-2 hidden group-hover:block text-xs text-white bg-black rounded-md px-2 py-1">
+                        {action.label}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </td>
             )}
           </tr>

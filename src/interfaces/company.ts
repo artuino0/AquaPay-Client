@@ -7,4 +7,5 @@ export interface ICompany {
   phone: string;
   cellphone: string;
   imagen: string;
+  captureDays: number[];
 }

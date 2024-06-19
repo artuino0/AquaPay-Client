@@ -17,10 +17,12 @@ import ChargeCatalog from "./components/home/catalogs/components/charge/ChargeCa
 import TariffCatalog from "./components/home/catalogs/components/tariff/TariffCatalog";
 import CustomerSerices from "./components/home/catalogs/components/services/CustomerSerices";
 import CaptureInterface from "./components/capture/CaptureInterface";
-import Records from "./components/home/records/Records";
 import PeriodCatalog from "./components/home/catalogs/components/periods/PeriodCatalog";
-import ServicesList from "./components/capture/pages/ServicesList/ServicesList";
+import ServicesList from "./components/home/services/components/ServicesList";
 import ServiceCapture from "./components/capture/pages/ServicePage/ServiceCapture";
+import ServicesPage from "./components/home/services/ServicesPage";
+import MobileServiceList from "./components/capture/pages/MobileServiceList/MobileServiceList";
+import ServiceDetail from "./components/home/services/components/ServiceDetail";
 
 const App = () => {
   return (
@@ -34,12 +36,15 @@ const App = () => {
             </ProtectedRoute>
           }
         >
-          <Route path="" element={<Navigate to={"/mobile/services"}></Navigate>} />
+          <Route
+            path=""
+            element={<Navigate to={"/mobile/services"}></Navigate>}
+          />
           <Route
             path="services"
             element={
               <ProtectedRoute>
-                <ServicesList />
+                <MobileServiceList />
               </ProtectedRoute>
             }
           />
@@ -70,13 +75,31 @@ const App = () => {
           />
 
           <Route
-            path="records"
+            path="services"
             element={
               <ProtectedRoute>
-                <Records />
+                <ServicesPage />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route path="" element={<Navigate to={"list"}></Navigate>} />
+            <Route
+              path="list"
+              element={
+                <ProtectedRoute>
+                  <ServicesList />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path=":serviceId"
+              element={
+                <ProtectedRoute>
+                  <ServiceDetail />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
           <Route
             path="catalogs"
             element={
@@ -87,7 +110,7 @@ const App = () => {
           >
             <Route path="" element={<Navigate to={"users"}></Navigate>} />
             <Route
-              path="services/:customerId?"
+              path="customer/:customerId?/services"
               element={
                 <ProtectedRoute>
                   <CustomerSerices />

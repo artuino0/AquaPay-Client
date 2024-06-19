@@ -17,12 +17,6 @@ const TablePaginator: React.FC<TablePaginatorProps> = ({
   isMobile = false,
   setLimit,
 }) => {
-  const pages = [];
-
-  for (let i = 1; i <= totalPages; i++) {
-    pages.push(i);
-  }
-
   return (
     <div className="flex justify-between m-2 text-sm">
       <div>
@@ -47,17 +41,9 @@ const TablePaginator: React.FC<TablePaginatorProps> = ({
         >
           <i className="bi bi-chevron-left"></i>
         </button>
-        {pages.map((page) => (
-          <button
-            key={page}
-            onClick={() => onPageChange(page)}
-            className={`px-3 py-1 mx-[2px] rounded ${
-              page === currentPage ? "bg-blue-500 text-white" : "bg-gray-200"
-            }`}
-          >
-            {page}
-          </button>
-        ))}
+        <button className="px-3 py-1 mx-[2px] rounded bg-blue-500 text-white">
+          {currentPage}
+        </button>
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
