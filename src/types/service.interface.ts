@@ -15,13 +15,27 @@ export interface IService {
   neighborhood: string;
   city: string;
   state: string;
-  charges: any[]; // Ajusta el tipo de acuerdo a la estructura real de "charges"
+  charges: any[];
   createdBy: {
     id: string;
     name: string;
   };
   __v: number;
+  lastRead: number | null;
+  previousDebt: number | null;
 }
+
+export type IServiceCreate = {
+  customerId: string;
+  meterNumber: string;
+  serviceType: string;
+  street: string;
+  number: string;
+  lastRead: number | null;
+  previousDebt: number | null;
+};
+
+export type IServiceUpdate = Partial<IServiceCreate>;
 
 export interface IServiceGetResponse {
   totalServices: number;

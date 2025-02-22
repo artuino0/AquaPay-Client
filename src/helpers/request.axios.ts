@@ -6,18 +6,19 @@ interface IAxiosRequest {
   method: "GET" | "POST" | "PUT" | "DELETE";
   body?: any;
   headers?: any;
+  queries?: Record<string, any>;
 }
 
 const requestController = <T>(data: IAxiosRequest): Promise<T> => {
   const config: AxiosRequestConfig = {
-    params: data.method === "GET" ? data.body : null,
     method: data.method,
     url: `${BASE_PATH}/${data.endpoint}`,
     headers: {
       Authorization: window.localStorage.getItem("token"),
       "Content-Type": data.headers ? "multipart/form-data" : "application/json",
     },
-    data: data.body,
+    params: data.method === "GET" ? data.queries : null,
+    data: data.method !== "GET" ? data.body : null,
   };
 
   return axios(config)

@@ -1,3 +1,4 @@
+import { Pagination } from "../interfaces/pagination";
 export interface ICustomer {
   id: string;
   externalContractId: number;
@@ -14,6 +15,19 @@ export interface ICustomer {
     _id: string;
     name: string;
   };
+}
+
+export type ICustomerResponse = Partial<ICustomer>;
+
+export type ICustomerCreate = Omit<
+  ICustomer,
+  "id" | "createdAt" | "updatedAt" | "createdBy"
+>;
+export type ICustomerUpdate = Partial<ICustomerCreate>;
+
+export interface ICustomerRequest {
+  data: ICustomerResponse[];
+  pagination: Pagination;
 }
 
 export interface ICustomerByID {

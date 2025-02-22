@@ -8,5 +8,16 @@ export default defineConfig({
       include: "**/*.tsx",
     }),
   ],
+  resolve: {
+    alias: [
+      { find: "@", replacement: "/src" },
+      { find: "@components", replacement: "/src/components" },
+      { find: "@interfaces", replacement: "/src/interfaces" },
+      { find: "@pages", replacement: "/src/pages" },
+      { find: "@services", replacement: "/src/services" },
+      { find: "@styles", replacement: "/src/styles" },
+      { find: "@utils", replacement: "/src/utils" },
+    ],
+  },
   server: { watch: { usePolling: true } },
 });
