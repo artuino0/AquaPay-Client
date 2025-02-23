@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
-import {
-  IService,
-  IServiceGetResponse,
-} from "../../../../types/service.interface";
-import requestController from "../../../../helpers/request.axios";
+import { IService, IServiceGetResponse } from "@/types/service.interface";
+import requestController from "@/helpers/request.axios";
 import { Link } from "react-router-dom";
-import MobileFilterInput from "../../../../components/MobileFillterInput";
-import TablePaginator from "../../../../components/TablePaginator";
+import MobileFilterInput from "@/components/MobileFillterInput";
+import TablePaginator from "@/components/TablePaginator";
+import { useGetServices } from "@/hooks/useService";
 
 const MobileServiceList = () => {
   const [servicesFetch, setServicesFetch] = useState<IService[]>([]);
@@ -19,11 +17,19 @@ const MobileServiceList = () => {
     currentPage: 1,
   });
 
-  useEffect(() => {
-    getServices();
-  }, [keyword, page, limit]);
+  const { data, isPending, error } = useGetServices({
+    page,
+    limit,
+    keyword,
+    meterless: false,
+    isMobile: true,
+  });
 
-  const getServices = async () => {
+  /*   useEffect(() => {
+    getServices();
+  }, [keyword, page, limit]); */
+
+  /*   const getServices = async () => {
     try {
       const response = await requestController<IServiceGetResponse>({
         endpoint: "services",
@@ -39,7 +45,7 @@ const MobileServiceList = () => {
     } catch (error) {
       console.error("Error fetching services:", error);
     }
-  };
+  }; */
 
   const handlePageChange = (page: number) => {
     setPage(page);
@@ -61,7 +67,7 @@ const MobileServiceList = () => {
         placeholder="Buscar servicio"
       />
       <ul className="text-sm">
-        {servicesFetch.map((service) => (
+        {data?.data.map((service) => (
           <li key={service._id}>
             {service.meterNumber !== "" ? (
               <Link

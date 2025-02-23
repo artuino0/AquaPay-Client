@@ -18,6 +18,12 @@ interface DataTableProps {
   handleDelete?: (row: any) => void;
   showServices?: boolean;
   handleServices?: (row: any) => void;
+  showActivate?: boolean;
+  handleActivate?: (row: any) => void;
+  showAddRecords?: boolean;
+  handleAddRecords?: (row: any) => void;
+  showOpenDetail?: boolean;
+  handleOpenDetail?: (row: any) => void;
   onRowClick?: (row: any) => void;
 }
 
@@ -36,6 +42,12 @@ export const DataTableWPagination: React.FC<DataTableProps> = ({
   handleDelete,
   showServices = false,
   handleServices,
+  showActivate = false,
+  handleActivate,
+  showAddRecords = false,
+  handleAddRecords,
+  showOpenDetail = false,
+  handleOpenDetail,
   onRowClick,
 }) => {
   const getNestedValue = (obj: any, path: string) => {
@@ -58,7 +70,7 @@ export const DataTableWPagination: React.FC<DataTableProps> = ({
           currency: "MXN",
         }).format(Number(value));
       case "date":
-        return moment(value).format("DD/MM/YYYY");
+        return moment.utc(value).locale("es").format("DD/MM/YYYY");
       case "boolean":
         return value ? "Sí" : "No";
       case "status":
@@ -115,6 +127,18 @@ export const DataTableWPagination: React.FC<DataTableProps> = ({
               ))}
               {showActions && (
                 <td className="py-3 px-6 flex gap-1 justify-center text-xs">
+                  {showOpenDetail && handleOpenDetail && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenDetail(row);
+                      }}
+                      className="bg-purple-500 text-white hover:bg-purple-700 px-2 py-1 rounded"
+                      title="Editar"
+                    >
+                      <i className="bi bi-eye"></i>
+                    </button>
+                  )}
                   {showEdit && handleEdit && (
                     <button
                       onClick={(e) => {
@@ -135,6 +159,30 @@ export const DataTableWPagination: React.FC<DataTableProps> = ({
                       }}
                       className="bg-green-500 text-white hover:bg-green-700 px-2 py-1 rounded"
                       title="Servicios"
+                    >
+                      <i className="bi bi-speedometer2"></i>
+                    </button>
+                  )}
+                  {showActivate && handleActivate && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleActivate(row);
+                      }}
+                      className="bg-indigo-600 text-white hover:bg-indigo-800 px-2 py-1 rounded"
+                      title="Eliminar"
+                    >
+                      <i className="bi bi-toggle-on"></i>
+                    </button>
+                  )}
+                  {showAddRecords && handleAddRecords && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddRecords(row);
+                      }}
+                      className="bg-green-600 text-white hover:bg-green-800 px-2 py-1 rounded"
+                      title="Agregar Registros"
                     >
                       <i className="bi bi-speedometer2"></i>
                     </button>

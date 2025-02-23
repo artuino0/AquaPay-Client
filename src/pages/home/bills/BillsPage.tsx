@@ -4,12 +4,15 @@ import { dataStore } from "../../../store/DataStore";
 import { useEffect, useState } from "react";
 import { ICompany } from "../../../interfaces/company";
 import requestController from "../../../helpers/request.axios";
+import { useGetCompanySettings } from "@/hooks/useCompany";
 
 const BillsPage = () => {
   const { periodBilling, fetchData } = dataStore();
   const [company, setCompany] = useState<ICompany>();
 
-  useEffect(() => {
+  const { data, isPending } = useGetCompanySettings();
+
+  /*   useEffect(() => {
     fetchData();
     requestController<ICompany>({ endpoint: "settings", method: "GET" })
       .then((rs) => {
@@ -18,15 +21,17 @@ const BillsPage = () => {
       .catch((e) => {
         console.log(e);
       });
-  }, []);
+  }, []); */
   return (
     <div className="w-full">
-      {company ? (
-        <PDFViewer width={"100%"} height={"500px"}>
-          <MyBill company={company} />
+      {data ? (
+        <PDFViewer width={"100%"} height={"1000px"}>
+          <MyBill company={data!} />
         </PDFViewer>
       ) : null}
-      <div className="border bg-white rounded-md overflow-hidden">{periodBilling?.name}</div>
+      <div className="border bg-white rounded-md overflow-hidden">
+        {periodBilling?.name}
+      </div>
     </div>
   );
 };

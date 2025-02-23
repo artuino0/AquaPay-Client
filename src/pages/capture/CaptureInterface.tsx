@@ -42,7 +42,8 @@ const CaptureInterface = () => {
           {periodBilling ? periodBilling.name : "Sin Periodo"}
         </div>
       </div>
-      {[29, 30, 31, 1, 2, 3, 4, 6, 15, 17].includes(day) && periodBilling ? (
+      {[29, 30, 31, 1, 2, 3, 4, 6, 15, 17, 22, 23].includes(day) &&
+      periodBilling ? (
         <Outlet></Outlet>
       ) : (
         <div className="border border-yellow-500 m-6 p-3 rounded-md bg-yellow-100 text-yellow-600 text-center">

@@ -1,3 +1,5 @@
+import { Pagination } from "@/interfaces/pagination";
+
 export interface ITariff {
   _id: string;
   year: number;
@@ -8,6 +10,11 @@ export interface ITariff {
   updatedAt: string;
   __v: number;
 }
+
+export type ITariffRequest = {
+  data: ITariff[];
+  pagination: Pagination;
+};
 
 interface CreatedBy {
   id: string;

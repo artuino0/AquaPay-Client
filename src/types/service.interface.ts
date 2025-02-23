@@ -1,3 +1,5 @@
+import { Pagination } from "@/interfaces/pagination";
+
 export interface IService {
   _id: string;
   customerId: {
@@ -13,6 +15,7 @@ export interface IService {
   street: string;
   number: string;
   neighborhood: string;
+  records: any[];
   city: string;
   state: string;
   charges: any[];
@@ -38,8 +41,6 @@ export type IServiceCreate = {
 export type IServiceUpdate = Partial<IServiceCreate>;
 
 export interface IServiceGetResponse {
-  totalServices: number;
-  totalPages: number;
-  currentPage: number;
-  services: IService[];
+  pagination: Pagination;
+  data: IService[];
 }

@@ -108,6 +108,7 @@ const UserCatalog = () => {
           text={`Eliminando usuario ${userSelected?.name}`}
           handleSubmit={handleConfirmDelete}
           handleCancel={() => setShowModalDelete(false)}
+          title="Eliminar usuario"
         >
           <p>
             Estas a punto de eliminar el usuario{" "}

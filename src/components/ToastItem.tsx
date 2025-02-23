@@ -1,5 +1,5 @@
 interface ToastProps {
-  type: "success" | "danger" | "loading";
+  type: "success" | "danger" | "loading" | "alert";
   message: string;
   toastIndex: number;
   onClose: () => void;
@@ -14,6 +14,8 @@ const ToastItem: React.FC<ToastProps> = ({ type, message, onClose }) => {
             ? "bg-green-500"
             : type === "danger"
             ? "bg-red-500"
+            : type === "alert"
+            ? "bg-yellow-500"
             : "bg-blue-500"
         } absolute left-0 top-0 w-[5px] h-full`}
       ></div>
@@ -23,6 +25,8 @@ const ToastItem: React.FC<ToastProps> = ({ type, message, onClose }) => {
             ? "bg-green-100 border-green-500 text-green-500"
             : type === "danger"
             ? "bg-red-100 border-red-500 text-red-500"
+            : type === "alert"
+            ? "bg-yellow-100 border-yellow-500 text-yellow-500"
             : "bg-blue-100 border-blue-500 text-blue-500"
         } px-6 py-4 flex items-center justify-between w-full`}
       >
@@ -42,6 +46,23 @@ const ToastItem: React.FC<ToastProps> = ({ type, message, onClose }) => {
             />
           </svg>
         )}
+        {type === "alert" && (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 inline-block mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01M10.29 3.86a2 2 0 0 1 3.42 0l7.38 12.78A2 2 0 0 1 19.38 20H4.62a2 2 0 0 1-1.71-3.36L10.29 3.86z"
+            />
+          </svg>
+        )}
+
         {type === "danger" && (
           <svg
             xmlns="http://www.w3.org/2000/svg"

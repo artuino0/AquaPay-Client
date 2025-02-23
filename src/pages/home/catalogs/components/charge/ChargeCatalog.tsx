@@ -1,65 +1,54 @@
-import { useEffect, useState } from "react";
-import { ICharge } from "../../../../../types/charge.interface";
+import { useState } from "react";
 import { Modal } from "react-overlays";
-import { RenderBD } from "../../../../../components/RenderBD";
+import { RenderBD } from "@/components/RenderBD";
 import ChargeForm from "./components/ChargeForm";
-import requestController from "../../../../../helpers/request.axios";
+import { useGetCharges, useDeleteCharge } from "@/hooks/useCharge";
+import { DataTableWPagination } from "@/components/DataTableWPagination";
+import { chargeColumns } from "@/builders/columns/ChargeColumns";
+import { ICharge } from "@/types/charge.interface";
+import ConfirmModal from "@/components/ConfirModal";
 
 const ChargeCatalog = () => {
-  const [charges, setCharges] = useState<ICharge[]>();
-  const [updater, setUpdater] = useState<number>(0);
   const [showModal, setShowModal] = useState(false);
-
-  useEffect(() => {
-    requestController<ICharge[]>({ endpoint: "charges", method: "GET" }).then(
-      (data) => {
-        setCharges(data);
-      }
-    );
-  }, [updater]);
+  const [showModalDelete, setShowModalDelete] = useState(false);
+  const [selectedCharge, setSelectedCharge] = useState<ICharge | null>(null);
+  const { data: charges, isLoading } = useGetCharges();
+  const deleteChargeMutation = useDeleteCharge();
 
   const handleClose = () => setShowModal(false);
+  const handleEdit = (charge: ICharge) => {
+    setSelectedCharge(charge);
+    setShowModal(true);
+  };
+
+  const handleDelete = (charge: ICharge) => {
+    setSelectedCharge(charge);
+    setShowModalDelete(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedCharge) {
+      deleteChargeMutation.mutate(selectedCharge.id);
+      setShowModalDelete(false);
+      setSelectedCharge(null);
+    }
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b bg-gray-100">
-            <th className="py-3 px-2 w-fit">Nombre del cargo:</th>
-            <th className="py-2">Tarifa:</th>
-            <th className="px-2">Estado:</th>
-            <th className="px-2">Creado Por:</th>
-            <th className="px-2 text-deep-blue">
-              <i className="bi bi-three-dots-vertical"></i>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {charges?.map((charge) => (
-            <tr
-              className="cursor-default border-b last:border-b-0 even:bg-gray-50 hover:bg-gray-100"
-              key={charge.id}
-            >
-              <td className="text-left px-6 w-fit">{charge.name}</td>
-              <td className="px-6 py-3 text-center">{charge.amount}</td>
-              <td className="text-center">
-                {charge.active ? (
-                  <span className="text-green-500">Activo</span>
-                ) : (
-                  <span className="text-red-500">Inactivo</span>
-                )}
-              </td>
-              <td className="text-center">
-                {charge.createdBy?.name ? charge.createdBy?.name : "N/A"}
-              </td>
-              <td className="text-center flex justify-center items-center py-3 gap-6 text-base">
-                <i className="bi bi-pencil-square hover:text-deep-blue cursor-pointer"></i>
-                <i className="bi bi-trash hover:text-red-500 cursor-pointer"></i>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <DataTableWPagination
+        columns={chargeColumns}
+        data={charges || []}
+        showActions
+        showEdit
+        handleEdit={handleEdit}
+        showDelete
+        handleDelete={handleDelete}
+      />
       <Modal
         className={"modal"}
         show={showModal}
@@ -68,9 +57,29 @@ const ChargeCatalog = () => {
       >
         <ChargeForm
           setShowModal={setShowModal}
-          setUpdater={setUpdater}
-          updater={updater}
+          selectedCharge={selectedCharge}
+          setSelectedCharge={setSelectedCharge}
         />
+      </Modal>
+      <Modal
+        className={"modal"}
+        show={showModalDelete}
+        onHide={() => setShowModalDelete(false)}
+        renderBackdrop={RenderBD}
+      >
+        <ConfirmModal
+          text={`Eliminando cargo ${selectedCharge?.name}`}
+          handleSubmit={handleConfirmDelete}
+          handleCancel={() => setShowModalDelete(false)}
+          title="Eliminar cargo"
+        >
+          <p>
+            Estas a punto de eliminar el cargo{" "}
+            <span className="font-semibold">{selectedCharge?.name}</span>, este
+            proceso es irreversible. <br /> <br />
+            ¿Estás seguro de que deseas continuar?
+          </p>
+        </ConfirmModal>
       </Modal>
       <div
         onClick={() => setShowModal(true)}

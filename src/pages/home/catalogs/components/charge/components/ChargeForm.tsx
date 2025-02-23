@@ -1,63 +1,46 @@
-import axios from "axios";
 import { useForm } from "react-hook-form";
-import { BASE_PATH } from "../../../../../../global.variables";
-import { AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
-import requestController from "../../../../../../helpers/request.axios";
+import { useCreateCharge, useUpdateCharge } from "@/hooks/useCharge";
+import { ICharge } from "@/types/charge.interface";
 
 interface IProps {
-  setUpdater: (newValue: number) => void;
   setShowModal: (newValue: boolean) => void;
-  updater: number;
+  selectedCharge: ICharge | null;
+  setSelectedCharge: (charge: ICharge | null) => void;
 }
 
-const ChargeForm: React.FC<IProps> = ({
-  setShowModal,
-  setUpdater,
-  updater,
-}) => {
-  const Authorization = window.localStorage.getItem("token");
-  const navigate = useNavigate();
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+const ChargeForm: React.FC<IProps> = ({ setShowModal, selectedCharge, setSelectedCharge }) => {
+  const { register, handleSubmit, reset } = useForm({
+    defaultValues: selectedCharge || {}
+  });
+  const { mutate: createCharge } = useCreateCharge();
+  const { mutate: updateCharge } = useUpdateCharge();
 
   const onSubmit = (data: any) => {
-    requestController({
-      endpoint: "charges",
-      method: "POST",
-      body: { ...data },
-    })
-      .then(() => {
-        setUpdater(updater + 1);
-        setShowModal(false);
-        alert("Nuevo concepto de cargo agregado");
-      })
-      .catch((e) => {
-        console.log(e.message);
-      });
-
-    /* axios
-      .post(`${BASE_PATH}/charges`, { ...data }, { headers: { Authorization } })
-      .then(() => {})
-      .catch((e: AxiosError) => {
-        if (e.response) {
-          if (e.response.status === 401) {
-            alert("Tu sesion a caducado, vuelve a iniciar sesion!");
-            navigate("/login");
-          }
-        } else {
-          alert("Servidor no disponible");
+    if (selectedCharge) {
+      updateCharge(
+        { id: selectedCharge.id, data },
+        {
+          onSuccess: () => {
+            setShowModal(false);
+            setSelectedCharge(null);
+            reset();
+          },
         }
-      }); */
+      );
+    } else {
+      createCharge(data, {
+        onSuccess: () => {
+          setShowModal(false);
+          reset();
+        },
+      });
+    }
   };
+
   return (
     <div className="modal-container rounded-md overflow-hidden">
       <div className=" border-b px-6 py-3 text-deep-blue">
-        Creando nuevo cargo
+        {selectedCharge ? "Editando cargo" : "Creando nuevo cargo"}
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="text-sm">

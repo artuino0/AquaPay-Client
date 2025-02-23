@@ -1,113 +1,122 @@
 import { useEffect, useState } from "react";
 import { Modal } from "react-overlays";
-import { RenderBD } from "../../../../../components/RenderBD";
+import { RenderBD } from "@/components/RenderBD";
 import TariffForm from "./components/TariffForm";
-import { ITariff, TariffElement } from "../../../../../types/tariff.interface";
-import { getStringDateCreated } from "../../../../../helpers/date.string";
-import requestController from "../../../../../helpers/request.axios";
+import { ITariff, TariffElement } from "@/types/tariff.interface";
+import { getStringDateCreated } from "@/helpers/date.string";
+import requestController from "@/helpers/request.axios";
 import TariffList from "./components/TariffList";
-import ChangeStore from "../../../../../store/ChangesStore";
-import floppy from "../../../../../assets/svgs/floppy.svg";
+import ChangeStore from "@/store/ChangesStore";
+import floppy from "@/assets/svgs/floppy.svg";
+import { useActivateTariff, useGetTariffs } from "@/hooks/useTariff";
+import { DataTableWPagination } from "@/components/DataTableWPagination";
+import { TariffColumns } from "@/builders/columns/TariffColumns";
+import { useUpdateTariff } from "@/hooks/useTariff";
+import ConfirmModal from "@/components/ConfirModal";
 
 const TariffCatalog = () => {
   const [tableOpen, setTableOpen] = useState<boolean>(false);
   const [month, setMonth] = useState<number | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [tariffs, setTariffs] = useState<ITariff[]>([]);
+  const [showModalActivate, setShowModalActivate] = useState<boolean>(false);
+  const [selectedTariff, setSelectedTariff] = useState<ITariff | null>(null);
   const [tariffsCubic, setTariffCubic] = useState<TariffElement[] | null>(null);
   const [cycleId, setCycleId] = useState<string | null>(null);
   const [updater, setUpdater] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
 
   const { changes, clearChanges } = ChangeStore();
+  const { data, isPending, refetch } = useGetTariffs();
+  const updateTariffMutation = useUpdateTariff();
+  const activateTariffMutation = useActivateTariff();
 
   useEffect(() => {
     let d = new Date();
     setMonth(d.getMonth() + 1);
   }, []);
-
   useEffect(() => {
-    requestController<ITariff[]>({
-      endpoint: "tariffs",
-      method: "GET",
-    }).then((data) => {
-      setTariffs(data);
-    });
-  }, [updater]);
-
+    refetch();
+    if (cycleId && data?.data) {
+      const updatedTariff = data.data.find((t) => t._id === cycleId);
+      if (updatedTariff) {
+        setTariffCubic(updatedTariff.tariffs);
+      }
+    }
+  }, [updater, cycleId]);
   const saveChanges = () => {
-    requestController({
-      endpoint: `tariffs/${cycleId}`,
-      method: "PUT",
-      body: changes,
-    })
-      .then(() => {
-        alert("tarifas actualizadas correctamente");
-        clearChanges();
-      })
-      .catch(() => {});
+    updateTariffMutation.mutate(
+      { tariffId: cycleId!, tariffData: changes },
+      {
+        onSuccess: () => {
+          // get tariffs from tarrifId
+          let newtariff = data?.data?.find((t) => t._id === cycleId);
+          setTariffCubic(newtariff?.tariffs || []);
+          clearChanges();
+          setUpdater((prev) => prev + 1);
+        },
+      }
+    );
+  };
+  const handleEdit = (tariff: ITariff) => {
+    setTariffCubic(tariff.tariffs);
+    setCycleId(tariff._id);
+  };
+  const handleActivate = (tariff: ITariff) => {
+    const currentYear = new Date().getFullYear();
+    if (tariff.year !== currentYear) {
+      setSelectedTariff(tariff);
+      setShowModalActivate(true);
+    } else {
+      activateTariffMutation.mutate(tariff._id, {
+        onSuccess: () => {
+          refetch();
+        },
+      });
+    }
+  };
+
+  const handleConfirmActivate = () => {
+    if (selectedTariff) {
+      activateTariffMutation.mutate(selectedTariff._id, {
+        onSuccess: () => {
+          refetch();
+          setShowModalActivate(false);
+          setSelectedTariff(null);
+        },
+      });
+    }
   };
 
   return (
     <div>
       <div className="flex">
-        <table className="w-full text-sm h-fit sticky top-0">
-          <thead>
-            {month == 12 || month == 1 || tariffs.length === 0 ? (
-              <tr>
-                <td className="py-3 px-2 text-right" colSpan={5}>
-                  <button
-                    className="bg-deep-blue text-white px-6 py-2"
-                    onClick={() => setShowModal(true)}
-                  >
-                    Generar nuevo ciclo
-                  </button>
-                </td>
-              </tr>
-            ) : null}
-            <tr className="bg-gray-100 border-b sticky top-0">
-              <th className="py-3 px-2">Ciclo:</th>
-              <th className="px-2">Fecha de alta:</th>
-              <th className="px-2">Creado Por:</th>
-              <th className="px-2">Estado:</th>
-              <th className="px-2 text-deep-blue">
-                <i
-                  className="bi bi-three-dots-vertical"
-                  onClick={() => setTableOpen(!tableOpen)}
-                ></i>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {tariffs.map((tariff) => (
-              <tr
-                key={tariff._id}
-                className="border-gray-200 text-center hover:bg-gray-50"
+        <div className="w-full">
+          {month == 12 || month == 1 || !data?.data?.length ? (
+            <div className="flex justify-end p-3">
+              <button
+                className="bg-deep-blue text-white px-6 py-2"
+                onClick={() => setShowModal(true)}
               >
-                <td className="py-3 px-2">{tariff.year}</td>
-                <td className="px-2">
-                  {getStringDateCreated(tariff.createdAt)}
-                </td>
-                <td className="px-2">{tariff.createdBy.name}</td>
-                <td className="text-center">
-                  {tariff.active ? (
-                    <span className="text-green-500">Activo</span>
-                  ) : (
-                    <span className="text-red-500">Inactivo</span>
-                  )}
-                </td>
-                <td className="px-2 text-deep-blue">
-                  <i
-                    className="bi bi-pencil-square hover:text-deep-blue cursor-pointer"
-                    onClick={() => {
-                      setTariffCubic(tariff.tariffs);
-                      setCycleId(tariff._id);
-                    }}
-                  ></i>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                Generar nuevo ciclo
+              </button>
+            </div>
+          ) : null}
+          <DataTableWPagination
+            columns={TariffColumns}
+            data={data?.data || []}
+            limit={limit}
+            currentPage={currentPage}
+            pagination={data?.pagination}
+            setLimit={setLimit}
+            onPageChange={setCurrentPage}
+            showActions
+            showEdit
+            handleEdit={handleEdit}
+            showActivate
+            handleActivate={handleActivate}
+          />
+        </div>
 
         {tariffsCubic && cycleId ? (
           <TariffList cycleId={cycleId} tariffsCubic={tariffsCubic} />
@@ -135,6 +144,26 @@ const TariffCatalog = () => {
           setUpdater={setUpdater}
           updater={updater}
         />
+      </Modal>
+      <Modal
+        className="modal"
+        show={showModalActivate}
+        onHide={() => setShowModalActivate(false)}
+        renderBackdrop={RenderBD}
+      >
+        <ConfirmModal
+          text={`Activando tarifa ${selectedTariff?.year}`}
+          handleSubmit={handleConfirmActivate}
+          handleCancel={() => setShowModalActivate(false)}
+          title="Activar tarifa"
+        >
+          <p>
+            Estas a punto de activar una tarifa del año{" "}
+            <span className="font-semibold">{selectedTariff?.year}</span>, este
+            proceso puede afectar los cobros. <br /> <br />
+            ¿Estás seguro de que deseas continuar?
+          </p>
+        </ConfirmModal>
       </Modal>
     </div>
   );

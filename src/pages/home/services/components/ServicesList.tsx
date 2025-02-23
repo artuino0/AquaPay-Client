@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
-import { IService } from "../../../../types/service.interface";
+import { IService } from "@/types/service.interface";
 import { useNavigate } from "react-router-dom";
-import requestController from "../../../../helpers/request.axios";
-import DataTable from "../../../../components/DataTable";
-import TablePaginator from "../../../../components/TablePaginator";
-import FilterInput from "../../../../components/FilterInput";
-import PageHeader from "../../../../components/PageHeader";
+import DataTable from "@/components/DataTable";
+import TablePaginator from "@/components/TablePaginator";
+import FilterInput from "@/components/FilterInput";
+import PageHeader from "@/components/PageHeader";
 import { Modal } from "react-overlays";
-import { RenderBD } from "../../../../components/RenderBD";
+import { RenderBD } from "@/components/RenderBD";
 import RecordForm from "./RecordForm";
+import { useGetServices } from "@/hooks/useService";
+import { Column } from "@/interfaces/columns";
+import { DataTableWPagination } from "@/components/DataTableWPagination";
+import { ServiceColumns } from "@/builders/columns/ServiceColumns";
 
 interface IServiceGetResponse {
   totalServices: number;
@@ -19,43 +22,24 @@ interface IServiceGetResponse {
 
 const ServicesList = () => {
   const navigate = useNavigate();
-
-  const [services, setServices] = useState<IService[]>([]);
-  const [pagination, setPagination] = useState({
-    totalServices: 0,
-    totalPages: 0,
-    currentPage: 1,
-  });
-  const [limit, setLimit] = useState(10);
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
   const [keyword, setKeyword] = useState("");
-  const [meterLess, setMeterLess] = useState(true);
+  const [meterless, setMeterLess] = useState(true);
   const [showModal, setShowModal] = useState(false);
-
   const [selectedService, setSelectedService] = useState<IService | null>(null);
 
-  const columns = [
-    {
-      Header: "Cliente",
-      render: (row: IService) =>
-        `${row.customerId.name} ${row.customerId.lastName} ${row.customerId.middleName}`,
-    },
-    {
-      Header: "Email Cliente",
-      accessor: "customerId.id",
-    },
-    {
-      Header: "External ID",
-      accessor: "customerId.externalContractId",
-    },
-    { Header: "No. Medidor", accessor: "meterNumber" },
-    { Header: "Tipo Servicio", accessor: "serviceType" },
-    {
-      Header: "Dirección",
-      render: (row: IService) => `${row.street} #${row.number}`,
-    },
-    { Header: "Creado Por", accessor: "createdBy.name" },
-  ];
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [keyword, meterless]);
+
+  const { data, isPending, error } = useGetServices({
+    page,
+    limit,
+    keyword,
+    meterless,
+  });
 
   const registrarLectura = (row: IService) => {
     setSelectedService(row);
@@ -65,36 +49,6 @@ const ServicesList = () => {
   const verDetalle = (row: IService) => {
     navigate(`/services/${row._id}`);
   };
-
-  const actions = [
-    {
-      label: "Registrar lectura",
-      icon: "bi bi-speedometer2",
-      action: registrarLectura,
-    },
-    {
-      label: "Ver detalle",
-      icon: "bi bi-eye",
-      action: verDetalle,
-    },
-  ];
-
-  const fetchData = (page: number, limit: number = 10) => {
-    const isHideMeterless = meterLess;
-    requestController<IServiceGetResponse>({
-      endpoint: "services",
-      method: "GET",
-      body: { page, limit, keyword, isHideMeterless },
-    }).then((response) => {
-      const { services, totalServices, totalPages, currentPage } = response;
-      setServices(services);
-      setPagination({ totalServices, totalPages, currentPage });
-    });
-  };
-
-  useEffect(() => {
-    fetchData(page, limit);
-  }, [limit, keyword, page, meterLess]);
 
   const handlePageChange = (page: number) => {
     setPage(page);
@@ -106,17 +60,22 @@ const ServicesList = () => {
       <FilterInput
         keyword={keyword}
         setKeyword={setKeyword}
-        meterless={meterLess}
+        meterless={meterless}
         setMeterless={setMeterLess}
       />
-      <DataTable data={services} columns={columns} actions={actions} />
-      <TablePaginator
-        currentPage={page}
-        totalPages={pagination.totalPages}
-        onPageChange={handlePageChange}
+      <DataTableWPagination
+        columns={ServiceColumns}
+        data={data?.data || []}
         limit={limit}
+        currentPage={page}
         setLimit={setLimit}
-      />
+        onPageChange={handlePageChange}
+        showActions={true}
+        showOpenDetail
+        handleOpenDetail={verDetalle}
+        showAddRecords
+        handleAddRecords={registrarLectura}
+      ></DataTableWPagination>
       <Modal className={"modal"} show={showModal} renderBackdrop={RenderBD}>
         <RecordForm service={selectedService!} setShowModal={setShowModal} />
       </Modal>

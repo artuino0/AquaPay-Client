@@ -6,13 +6,14 @@ import ClientForm from "./components/ClientForm";
 import { DataTableWPagination } from "@/components/DataTableWPagination";
 import { customerColumns } from "@/builders/columns/ClientColumns";
 import { useNavigate } from "react-router-dom";
-import { useGetCustomers } from "@/hooks/useCustomer";
+import { useGetCustomers, useDeleteCustomer } from "@/hooks/useCustomer";
+import ConfirmModal from "@/components/ConfirModal";
 
 const ClientCatalog = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(10);
-  const [updater, setUpdater] = useState<number>(0);
   const [showModal, setShowModal] = useState(false);
+  const [showModalDelete, setShowModalDelete] = useState(false);
   const [showDeleted, setShowDeleted] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<ICustomer | null>(
     null
@@ -20,6 +21,7 @@ const ClientCatalog = () => {
 
   const columns = customerColumns;
   const navigate = useNavigate();
+  const deleteCustomerMutation = useDeleteCustomer();
 
   const { data, isPending, error } = useGetCustomers(
     currentPage,
@@ -32,7 +34,18 @@ const ClientCatalog = () => {
     setShowModal(true);
   };
 
-  const handleDelete = (customer: any) => {};
+  const handleDelete = (customer: ICustomer) => {
+    setSelectedCustomer(customer);
+    setShowModalDelete(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (selectedCustomer) {
+      deleteCustomerMutation.mutate(selectedCustomer.id);
+      setShowModalDelete(false);
+      setSelectedCustomer(null);
+    }
+  };
 
   const handleNavigation = (customer: any) => {
     navigate(`../customer/${customer.id}/services`);
@@ -82,6 +95,30 @@ const ClientCatalog = () => {
           setShowModal={setShowModal}
           setSelectedCustomer={setSelectedCustomer}
         />
+      </Modal>
+
+      <Modal
+        className={"modal"}
+        show={showModalDelete}
+        onHide={() => setShowModalDelete(false)}
+        renderBackdrop={RenderBD}
+      >
+        <ConfirmModal
+          text={`Eliminando cliente ${selectedCustomer?.name}`}
+          handleSubmit={handleConfirmDelete}
+          handleCancel={() => setShowModalDelete(false)}
+          title="Eliminar cliente"
+        >
+          <p>
+            Estas a punto de eliminar el cliente{" "}
+            <span className="font-semibold">
+              {selectedCustomer?.name} {selectedCustomer?.middleName}{" "}
+              {selectedCustomer?.lastName}
+            </span>
+            , este proceso es irreversible. <br /> <br />
+            ¿Estás seguro de que deseas continuar?
+          </p>
+        </ConfirmModal>
       </Modal>
     </div>
   );

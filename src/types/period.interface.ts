@@ -10,4 +10,7 @@ export interface IPeriod {
     _id: string;
     name: string;
   };
+  fecha_inicio: Date;
+  fecha_fin: Date;
+  fecha_limite_pago: Date;
 }

@@ -8,8 +8,7 @@ interface UserDeleteProps {
   title: string;
 }
 
-const UserDelete: React.FC<UserDeleteProps> = ({
-  text,
+const ConfirmModal: React.FC<UserDeleteProps> = ({
   handleSubmit,
   handleCancel,
   children,
@@ -48,9 +47,8 @@ const UserDelete: React.FC<UserDeleteProps> = ({
           Confirmar
         </button>
       </div>
-      {/* */}
     </div>
   );
 };
 
-export default UserDelete;
+export default ConfirmModal;

@@ -1,5 +1,6 @@
 import {
   createCustomer,
+  deleteCustomer,
   getCustomerById,
   getCustomers,
   updateCustomer,
@@ -80,6 +81,30 @@ export const useUpdateCustomer = () => {
       addToast({
         type: "danger",
         message: error.message || "Error al actualizar cliente",
+        autoClose: true,
+      });
+    },
+  });
+};
+
+export const useDeleteCustomer = () => {
+  const addToast = useToastStore((state) => state.addToast);
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (customerId: string) => deleteCustomer(customerId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["customers"] });
+      addToast({
+        type: "success",
+        message: "Cliente eliminado exitosamente",
+        autoClose: true,
+      });
+    },
+    onError: (error: any) => {
+      addToast({
+        type: "danger",
+        message: error.message || "Error al eliminar cliente",
         autoClose: true,
       });
     },
